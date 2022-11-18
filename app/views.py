@@ -3,6 +3,7 @@ from .forms import RegisterForm, EmployeeForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import Group
 
 from .models import Employee
 
@@ -20,7 +21,9 @@ def register_user(request):
             }
             form = RegisterForm(request.POST)
             if form.is_valid():
-                form.save()
+                user_permisssion = form.save()
+                group = Group.objects.get(name='Viewer')
+                user_permisssion.groups.add(group)
                 messages.success(request,"User created successfully")
                 return redirect('/login-user')
             else:
