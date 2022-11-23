@@ -16,6 +16,7 @@
       <button class="btn btn-outline-dark mx-5 mt-3 d-flex justify-content-center col-lg-11" disabled>You don't have any permission to add employee</button>
     {% endif %}
     <div>
+     
         <table class="table bg-light mt-3">
             <thead class="thead-dark">
               <tr class="bg-secondary">
@@ -53,6 +54,66 @@
               
             </tbody>
           </table>
+
+
     </div>
    </div>
+
+   <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <button class="btn btn-primary" id="clickbtn">Show</button>
+        <button class="btn btn-primary" id="hidebtn">Hide</button>
+        <button class="btn btn-primary" id="loadbtn" onclick="this.style.visibility = 'hidden'">load data</button>
+        <div class="maindata">
+          <table class="table">
+            <thead>
+              <th>Sn</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Contact</th>
+              <th>Salary</th>
+            </thead>
+            <tbody class="tabledata" id="tabledata">
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+   </div>
+   
+
+   <script>
+    $('#clickbtn').on('click',(function(){
+      $('#tabledata').show();
+    }));
+
+    $('#loadbtn').click(function(){
+    // $('#loadbtn').load();
+    
+    $.ajax({
+        type:'GET',
+        url:'/app',
+        success:function(response){
+        console.log(response)
+        for(var i = 0; i<=response.employees.length; i++){
+          $('#tabledata').append(
+            '<tr><td>'+ parseInt(i+1) + 
+            '</td><td>' + response.employees[i].name + 
+            '</td> <td>' + response.employees[i].email + 
+            '</td><td>'+response.employees[i].contact +
+            '</td><td>'+response.employees[i].salary+
+            '</td></tr>')
+          }
+        }
+      })
+    });
+
+    $('#hidebtn').click(function(){
+    $('#tabledata').hide();
+    });
+   </script>
+
+   
 {% endblock %}

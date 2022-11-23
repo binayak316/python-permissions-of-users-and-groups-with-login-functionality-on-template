@@ -3,9 +3,12 @@ from .forms import RegisterForm, EmployeeForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import Group
-
+from django.contrib.auth.models import Group, Permission
+from django.http.response import JsonResponse
+import json
+from django.forms.models import  model_to_dict
 from .models import Employee
+
 
 
 # Create your views here.
@@ -70,9 +73,13 @@ def logout_user(request):
 
 @login_required
 def index(request):
-    emp = Employee.objects.all()
+    emp = Employee.objects.all().order_by('id')
+    manager = Group.objects.filter(name='manager').first()
+    permissions = Permission.objects.all()
     context = {
         'emp':emp,
+        'manager' : manager,
+        'permissions' : permissions
     }
     return render(request, 'app/index.html',context)
 
@@ -112,3 +119,22 @@ def delete_employee(request, pk):
         'emp':emp,
     }
     return render(request,'app/delete_employee.html',context)
+
+
+def app(request):
+   
+    data = []
+    employees = Employee.objects.all().order_by('id')
+    print(type(employees))
+    for emp in employees:
+        data.append({
+            'id': emp.id,
+            'name': emp.emp_name,
+            'email':emp.emp_email,
+            'contact':emp.emp_contact,
+            'salary':str(emp.emp_salary),
+        })
+    return JsonResponse({'employees':data}, safe=False)
+
+    # return JsonResponse(model_to_dict(context), safe=False)
+
